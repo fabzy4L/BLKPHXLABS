@@ -1,0 +1,47 @@
+import fitz  # PyMuPDF
+import re
+
+def convert_pdf_to_markdown(pdf_path, output_md_path):
+    doc = fitz.open(pdf_path)
+    markdown_lines = []
+
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        blocks = page.get_text("blocks")
+        
+        for block in blocks:
+            text = block[4].strip()
+            if not text:
+                continue
+                
+            # Filter out isolated page numbers
+            if text.isdigit() and len(text) < 4:
+                continue
+                
+            # Heuristic: Identify main chapters/headers
+            if re.match(r'^(CHAPTER \d+|ABSTRACT|DEDICATION|ACKNOWLEDGEMENTS|CURRICULUM VITA)', text, re.IGNORECASE):
+                text = f"\n## {text.title()}\n"
+            
+            # Heuristic: Identify sub-sections (e.g., 1.1, 2.3)
+            elif re.match(r'^\d+\.\d+\.?\s+[A-Z]', text):
+                text = f"\n### {text}\n"
+                
+            # Formatting: Clean up hyphenated line breaks within standard paragraphs
+            else:
+                text = re.sub(r'-\n', '', text)  # Merge hyphenated words
+                text = re.sub(r'\n', ' ', text)  # Merge broken lines in paragraphs
+                text = f"{text}\n\n"
+
+            markdown_lines.append(text)
+
+    # Write to Markdown artifact
+    with open(output_md_path, "w", encoding="utf-8") as f:
+        f.writelines(markdown_lines)
+        
+    print(f"Conversion complete. Artifact saved to: {output_md_path}")
+
+# Execution
+if __name__ == "__main__":
+    input_file = "Dissertation FAP.pdf"
+    output_file = "Dissertation_FAP_Full.md"
+    convert_pdf_to_markdown(input_file, output_file)
