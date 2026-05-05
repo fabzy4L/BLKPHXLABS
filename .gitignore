@@ -1,0 +1,18 @@
+# data artifacts
+*.pdf
+*.md
+*.jsonl
+chroma_db/
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# streamlit
+.streamlit/secrets.toml
+
+# claude
+.claude/

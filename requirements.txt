@@ -1,0 +1,5 @@
+pymupdf
+chromadb
+sentence-transformers
+google-genai
+streamlit
