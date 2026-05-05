@@ -1,6 +1,5 @@
 # data artifacts
 *.pdf
-*.md
 *.jsonl
 chroma_db/
 
